@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedStudy - Medical Learning Platform</title>
+    <style>
+        /* Global Variables */
+        :root {
+            --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --primary: #0071E3;
+            --primary-light: #2997FF;
+            --gray-100: #f5f5f7;
+            --gray-200: #e2e2e9;
+            --gray-300: #d2d2d7;
+            --gray-400: #a1a1a6;
+            --gray-500: #86868b;
+            --gray-600: #515154;
+            --gray-700: #3a3a3c;
+            --gray-800: #2c2c2e;
+            --gray-900: #1d1d1f;
+            --white: #ffffff;
+            --black: #000000;
+            --success: #30D158;
+            --warning: #FF9F0A;
+            --danger: #FF453A;
+            --border-radius-sm: 12px;
+            --border-radius-md: 16px;
+            --border-radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 6px 16px rgba(0,0,0,0.08);
+            --shadow-lg: 0 12px 48px rgba(0,0,0,0.1);
+        }
+
+        /* Theme Variables */
+        [data-theme="light"] {
+            --bg-primary: var(--white);
+            --bg-secondary: var(--gray-100);
+            --text-primary: var(--black);
+            --text-secondary: var(--gray-600);
+            --text-tertiary: var(--gray-500);
+            --border-color: var(--gray-200);
+            --card-bg: var(--white);
+            --overlay: rgba(255,255,255,0.8);
+            --header-bg: rgba(255,255,255,0.8);
+            --header-border: rgba(0,0,0,0.05);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: var(--gray-900);
+            --bg-secondary: var(--gray-800);
+            --text-primary: var(--white);
+            --text-secondary: var(--gray-400);
+            --text-tertiary: var(--gray-500);
+            --border-color: var(--gray-700);
+            --card-bg: var(--gray-800);
+            --overlay: rgba(0,0,0,0.7);
+            --header-bg: rgba(0,0,0,0.8);
+            --header-border: rgba(255,255,255,0.1);
+        }
+
+        [data-theme="sepia"] {
+            --bg-primary: #F2EDE4;
+            --bg-secondary: #E6DFD4;
+            --text-primary: #3E3B35;
+            --text-secondary: #605A50;
+            --text-tertiary: #8A8277;
+            --border-color: #D9CBB5;
+            --card-bg: #E6DFD4;
+            --overlay: rgba(242,237,228,0.95);
+            --header-bg: rgba(242,237,228,0.9);
+            --header-border: rgba(0,0,0,0.05);
+        }
+
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: var(--font-system);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            transition: var(--transition);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Layout & Navigation */
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding-top: 80px;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 0 24px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--header-border);
+            z-index: 1000;
+            transition: var(--transition);
+            height: 72px;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            text-decoration: none;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            font-size: 26px;
+        }
+
+        .main-nav {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-link.active {
+            color: var(--text-primary);
+        }
+
+        .nav-link:after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+        }
+
+        .nav-link:hover:after, 
+        .nav-link.active:after {
+            width: 100%;
+        }
+
+        /* Theme Switcher */
+        .theme-switcher {
+            display: flex;
+            background: var(--bg-secondary);
+            padding: 4px;
+            border-radius: 12px;
+        }
+
+        .theme-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .theme-btn.active {
+            background: var(--card-bg);
+        }
+
+        /* Auth Buttons */
+        .auth-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--border-radius-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-size: 15px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-secondary);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 80px 24px;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -0.015em;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .dashboard-section {
+            display: none;
+        }
+
+        /* Cards & Grids */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            padding: 32px 24px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-md);
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .card-header {
+            padding: 24px 24px 16px;
+        }
+
+        .card-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(10, 132, 255, 0.15);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        .card h3 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .card-content {
+            padding: 0 24px 24px;
+        }
+
+        .file-list {
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .file-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .file-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .editor-container {
+            padding: 32px;
+        }
+
+        .editor-header {
+            margin-bottom: 24px;
+        }
+
+        .editor-content {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            min-height: 300px;
+            padding: 24px;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        .editor-content:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .editor-form input,
+        .editor-form textarea {
+            width: 100%;
+            padding: 16px;
+            border-radius: var(--border-radius-sm);
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 16px;
+            margin-bottom: 16px;
+            transition: var(--transition);
+        }
+
+        .editor-form input:focus,
+        .editor-form textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        /* Modal System */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--overlay);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 24px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            max-width: 440px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-footer {
+            padding: 24px;
+            background: var(--card-bg);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .modal-description {
+            color: var(--text-secondary);
+        }
+
+        .auth-form {
+            display: grid;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: grid;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-control {
+            padding: 16px;
+            border-radius: var(--border-radius-sm);
+            border: 1px solid var(--border-color);
+            font-size: 16px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: var(--transition);
+            font-family: var(--font-system);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        /* Upload Section */
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--border-radius-md);
+            padding: 64px 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--card-bg);
+            position: relative;
+        }
+
+        .upload-area:hover, 
+        .upload-area.active {
+            border-color: var(--primary);
+            background: rgba(10, 132, 255, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--primary);
+        }
+
+        .upload-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 960px) {
+            .hero h1 {
+                font-size: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-nav {
+                gap: 24px;
+            }
+            
+            .nav-link span {
+                display: none;
+            }
+            
+            .theme-btn {
+                width: 36px;
+                height: 36px;
+            }
+            
+            .hero {
+                padding: 60px 20px;
+            }
+            
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .hero p {
+                font-size: 18px;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                gap: 12px;
+                max-width: 300px;
+                margin: 0 auto 32px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-container {
+                gap: 16px;
+            }
+            
+            .logo-text {
+                display: none;
+            }
+            
+            .btn span {
+                display: none;
+            }
+            
+            .btn .icon {
+                margin: 0;
+            }
+            
+            .auth-buttons .btn {
+                padding: 8px 16px;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <!-- Navigation Header -->
+    <header>
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <span class="logo-icon">🩺</span>
+                <span class="logo-text">MedStudy</span>
+            </a>
+            
+            <div class="main-nav">
+                <a href="#dashboard" class="nav-link active" data-section="dashboard">
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="#notes" class="nav-link" data-section="notes">
+                    <span class="nav-text">Notes</span>
+                </a>
+                <a href="#blog" class="nav-link" data-section="blog">
+                    <span class="nav-text">Articles</span>
+                </a>
+                
+                <div class="theme-switcher">
+                    <button class="theme-btn active" data-theme="light" title="Light theme">☀️</button>
+                    <button class="theme-btn" data-theme="dark" title="Dark theme">🌙</button>
+                    <button class="theme-btn" data-theme="sepia" title="Sepia theme">📖</button>
+                </div>
+            </div>
+            
+            <div class="auth-buttons">
+                <button class="btn btn-outline" id="loginBtn">Sign In</button>
+                <button class="btn btn-primary" id="registerBtn">Register</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Hero Section -->
+        <div class="hero" id="hero">
+            <h1>The Medical Learning Platform Reimagined</h1>
+            <p>
+                Organize your study materials, create articles, and collaborate with fellow medical professionals
+                in our intuitive, distraction-free environment.
+            </p>
+            <div class="cta-buttons">
+                <button class="btn btn-primary">Get Started</button>
+                <button class="btn btn-outline">Learn More</button>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <section class="dashboard-section" id="dashboard">
+            <div class="dashboard-grid">
+                <!-- Notes Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📚</div>
+                        <h3>Study Notes</h3>
+                        <p>Organize all your medical materials in one place</p>
+                    </div>
+                    <div class="card-content">
+                        <ul class="file-list">
+                            <li class="file-item">
+                                <div class="file-icon">📘</div>
+                                <div>
+                                    <div>Anatomy Review</div>
+                                    <small>Updated 2 hours ago</small>
+                                </div>
+                            </li>
+                            <li class="file-item">
+                                <div class="file-icon">📊</div>
+                                <div>
+                                    <div>Pharmacology Charts</div>
+                                    <small>Updated yesterday</small>
+                                </div>
+                            </li>
+                            <li class="file-item">
+                                <div class="file-icon">🖼️</div>
+                                <div>
+                                    <div>Pathology Images</div>
+                                    <small>Updated 3 days ago</small>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Articles Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">✍️</div>
+                        <h3>My Articles</h3>
+                        <p>Write and publish medical insights</p>
+                    </div>
+                    <div class="card-content">
+                        <ul class="file-list">
+                            <li class="file-item">
+                                <div class="file-icon">📝</div>
+                                <div>
+                                    <div>Clinical Case Study</div>
+                                    <small>Draft | Started yesterday</small>
+                                </div>
+                            </li>
+                            <li class="file-item">
+                                <div class="file-icon">📑</div>
+                                <div>
+                                    <div>Surgery Best Practices</div>
+                                    <small>Published | 24 comments</small>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Resource Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📂</div>
+                        <h3>Resources</h3>
+                        <p>Quick access to essential materials</p>
+                    </div>
+                    <div class="card-content">
+                        <ul class="file-list">
+                            <li class="file-item">
+                                <div class="file-icon">📈</div>
+                                <div>
+                                    <div>Medical Statistics</div>
+                                    <small>45 files</small>
+                                </div>
+                            </li>
+                            <li class="file-item">
+                                <div class="file-icon">📰</div>
+                                <div>
+                                    <div>Journals & Publications</div>
+                                    <small>8 subscriptions</small>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Notes Section -->
+        <section class="dashboard-section" id="notes">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Upload Study Materials</h3>
+                    <p>Drag and drop or click to upload files</p>
+                </div>
+                <div class="card-content">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">📤</div>
+                        <h4>Upload Files</h4>
+                        <p>PDF, DOC, PPT, JPG, and PNG files</p>
+                        <input type="file" class="upload-input" id="fileInput" multiple>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blog Editor Section -->
+        <section class="dashboard-section" id="blog">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Article Editor</h3>
+                    <p>Create and publish medical articles</p>
+                </div>
+                <div class="editor-container">
+                    <div class="editor-header">
+                        <input type="text" class="form-control" placeholder="Article Title">
+                    </div>
+                    <div class="editor-content" contenteditable="true">
+                        <h2>Understanding Differential Diagnosis</h2>
+                        <p>Differential diagnosis is the process of differentiating between two or more conditions that share similar signs or symptoms...</p>
+                    </div>
+                    <div>
+                        <input type="text" class="form-control" placeholder="Tags (comma separated)">
+                        <button class="btn btn-primary" style="margin-top: 16px;">Save Article</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Sign In to MedStudy</h3>
+                <p class="modal-description">Access your personalized learning dashboard</p>
+            </div>
+            <div class="modal-body">
+                <form class="auth-form">
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" placeholder="name@institution.edu">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" placeholder="••••••••">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="closeLogin">Cancel</button>
+                <button class="btn btn-primary">Sign In</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Create Account</h3>
+                <p class="modal-description">Start your medical learning journey</p>
+            </div>
+            <div class="modal-body">
+                <form class="auth-form">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" placeholder="Dr. Jane Smith">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" placeholder="name@institution.edu">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" placeholder="••••••••">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" placeholder="••••••••">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="closeRegister">Cancel</button>
+                <button class="btn btn-primary">Create Account</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script -->
+    <script>
+        // Theme Switching
+        const themeButtons = document.querySelectorAll('.theme-btn');
+        const body = document.querySelector('body');
+        
+        themeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                themeButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                body.setAttribute('data-theme', button.dataset.theme);
+                
+                // Save theme preference
+                localStorage.setItem('theme', button.dataset.theme);
+            });
+        });
+        
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            body.setAttribute('data-theme', savedTheme);
+            themeButtons.forEach(button => {
+                button.classList.toggle('active', button.dataset.theme === savedTheme);
+            });
+        }
+
+        // Navigation
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.dashboard-section');
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                const targetSection = link.dataset.section;
+                
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                
+                sections.forEach(section => {
+                    section.style.display = section.id === targetSection ? 'block' : 'none';
+                });
+                
+                // Hide hero when navigating to dashboard sections
+                document.getElementById('hero').style.display = 
+                    targetSection !== 'dashboard' ? 'none' : 'block';
+            });
+        });
+
+        // File upload
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        
+        if (uploadArea && fileInput) {
+            uploadArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, unhighlight, false);
+            });
+            
+            fileInput.addEventListener('change', handleFileSelect);
+        }
+        
+        function highlight(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            uploadArea.classList.add('active');
+        }
+        
+        function unhighlight(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            uploadArea.classList.remove('active');
+        }
+        
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            console.log(`${files.length} file(s) selected`);
+            
+            // Simulate upload process
+            if (files.length) {
+                uploadArea.innerHTML = `
+                    <div class="upload-icon">✅</div>
+                    <h4>${files.length} file(s) uploaded</h4>
+                    <p>Your files are being processed</p>
+                `;
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    uploadArea.innerHTML = `
+                        <div class="upload-icon">📤</div>
+                        <h4>Upload Files</h4>
+                        <p>PDF, DOC, PPT, JPG, and PNG files</p>
+                        <input type="file" class="upload-input" id="fileInput" multiple>
+                    `;
+                }, 2000);
+            }
+        }
+
+        // Modal Functionality
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const closeLogin = document.getElementById('closeLogin');
+        const closeRegister = document.getElementById('closeRegister');
+        const loginModal = document.getElementById('loginModal');
+        const registerModal = document.getElementById('registerModal');
+        
+        loginBtn.addEventListener('click', () => loginModal.classList.add('show'));
+        registerBtn.addEventListener('click', () => registerModal.classList.add('show'));
+        
+        closeLogin.addEventListener('click', () => loginModal.classList.remove('show'));
+        closeRegister.addEventListener('click', () => registerModal.classList.remove('show'));
+        
+        // Click outside modal to close
+        window.addEventListener('click', (e) => {
+            if (e.target === loginModal) loginModal.classList.remove('show');
+            if (e.target === registerModal) registerModal.classList.remove('show');
+        });
+
+        // Initialize editor content
+        document.getElementById('blog').addEventListener('click', () => {
+            const editor = document.querySelector('.editor-content');
+            if (!editor.textContent.trim()) {
+                editor.innerHTML = `
+                    <h2>Your Article Title</h2>
+                    <p>Start writing your medical article here. You can edit formatting using the toolbar above.</p>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
